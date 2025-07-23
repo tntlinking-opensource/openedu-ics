@@ -47,4 +47,5 @@ nbdist/
 !*/build/*.xml
 
 *.zip
+.svn
 智能排课
