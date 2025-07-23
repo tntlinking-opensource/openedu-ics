@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.teach.paike.mapper.LessonScheduleTimeMapper">
+
+    <resultMap type="LessonScheduleTime" id="LessonScheduleTimeResult">
+        <result property="id" column="id"/>
+        <result property="schoolId" column="school_id"/>
+        <result property="lessonScheduleId" column="lesson_schedule_id"/>
+        <result property="weekdays" column="weekdays"/>
+        <result property="morning" column="morning"/>
+        <result property="afternoon" column="afternoon"/>
+        <result property="night" column="night"/>
+    </resultMap>
+
+    <sql id="selectLessonScheduleTimeVo">
+        select t.*
+        from tpk_lesson_schedule_time t
+    </sql>
+
+    <select id="selectLessonScheduleTimeList" parameterType="LessonScheduleTime" resultMap="LessonScheduleTimeResult">
+        <include refid="selectLessonScheduleTimeVo"/>
+        <where>
+            <if test="schoolId != null ">and t.school_id = #{schoolId}</if>
+            <if test="lessonScheduleId != null ">and t.lesson_schedule_id = #{lessonScheduleId}</if>
+            <if test="weekdays != null ">and t.weekdays = #{weekdays}</if>
+            <if test="morning != null ">and t.morning = #{morning}</if>
+            <if test="afternoon != null ">and t.afternoon = #{afternoon}</if>
+            <if test="night != null ">and t.night = #{night}</if>
+        </where>
+        order by t.id desc
+    </select>
+
+    <select id="selectLessonScheduleTimeById" parameterType="Long" resultMap="LessonScheduleTimeResult">
+        <include refid="selectLessonScheduleTimeVo"/>
+        where t.id = #{id}
+    </select>
+
+    <select id="selectByLessonScheduleId" parameterType="Long" resultMap="LessonScheduleTimeResult">
+        <include refid="selectLessonScheduleTimeVo"/>
+        where t.lesson_schedule_id = #{lessonScheduleId}
+    </select>
+
+    <insert id="insertLessonScheduleTime" parameterType="LessonScheduleTime" useGeneratedKeys="true" keyProperty="id">
+        insert into tpk_lesson_schedule_time
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="schoolId != null">school_id,</if>
+            <if test="lessonScheduleId != null">lesson_schedule_id,</if>
+            <if test="weekdays != null">weekdays,</if>
+            <if test="morning != null">morning,</if>
+            <if test="afternoon != null">afternoon,</if>
+            <if test="night != null">night,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="schoolId != null">#{schoolId},</if>
+            <if test="lessonScheduleId != null">#{lessonScheduleId},</if>
+            <if test="weekdays != null">#{weekdays},</if>
+            <if test="morning != null">#{morning},</if>
+            <if test="afternoon != null">#{afternoon},</if>
+            <if test="night != null">#{night},</if>
+        </trim>
+    </insert>
+
+    <insert id="copy">
+        INSERT INTO tpk_lesson_schedule_time (school_id, lesson_schedule_id, weekdays, morning, afternoon, night)
+        select school_id, #{param2}, weekdays, morning, afternoon, night
+        from tpk_lesson_schedule_time
+        where lesson_schedule_id = #{param1}
+    </insert>
+
+    <update id="updateLessonScheduleTime" parameterType="LessonScheduleTime">
+        update tpk_lesson_schedule_time
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="schoolId != null">school_id = #{schoolId},</if>
+            <if test="lessonScheduleId != null">lesson_schedule_id = #{lessonScheduleId},</if>
+            <if test="weekdays != null">weekdays = #{weekdays},</if>
+            <if test="morning != null">morning = #{morning},</if>
+            <if test="afternoon != null">afternoon = #{afternoon},</if>
+            <if test="night != null">night = #{night},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteLessonScheduleTimeById" parameterType="Long">
+        delete
+        from tpk_lesson_schedule_time
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteLessonScheduleTimeByIds" parameterType="String">
+        delete from tpk_lesson_schedule_time where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.teach.school.mapper.TeachCalendarMapper">
+
+    <resultMap type="TeachCalendar" id="TeachCalendarResult">
+        <result property="id" column="id"/>
+        <result property="schoolId" column="school_id"/>
+        <result property="year" column="year"/>
+        <result property="term" column="term"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="current" column="current"/>
+    </resultMap>
+
+    <sql id="selectTeachCalendarVo">
+        select id,
+               school_id,
+               year,
+               term,
+               start_date,
+               end_date,
+               current,
+               week_num
+        from ts_teach_calendar t
+    </sql>
+
+    <select id="selectTeachCalendarList" parameterType="TeachCalendar" resultMap="TeachCalendarResult">
+        <include refid="selectTeachCalendarVo"/>
+        where t.del_flag = '0'
+        <if test="schoolId != null ">and school_id = #{schoolId}</if>
+        <if test="year != null  and year != ''">and year = #{year}</if>
+        <if test="term != null  and term != ''">and term = #{term}</if>
+        <if test="startDate != null ">and start_date = #{startDate}</if>
+        <if test="endDate != null ">and end_date = #{endDate}</if>
+        <if test="current != null  and current != ''">and current = #{current}</if>
+        order by t.start_date desc
+    </select>
+
+    <select id="selectTeachCalendarById" parameterType="Long" resultMap="TeachCalendarResult">
+        <include refid="selectTeachCalendarVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="getYears" parameterType="Long" resultType="String">
+        select year
+        from ts_teach_calendar
+        where school_id = #{schoolId}
+          and del_flag = '0'
+        group by year
+        order by year desc
+    </select>
+
+    <insert id="insertTeachCalendar" parameterType="TeachCalendar" useGeneratedKeys="true" keyProperty="id">
+        insert into ts_teach_calendar
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="schoolId != null">school_id,</if>
+            <if test="year != null and year != ''">year,</if>
+            <if test="term != null and term != ''">term,</if>
+            <if test="startDate != null">start_date,</if>
+            <if test="endDate != null">end_date,</if>
+            <if test="current != null and current != ''">current,</if>
+            <if test="weekNum != null">week_num,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="schoolId != null">#{schoolId},</if>
+            <if test="year != null and year != ''">#{year},</if>
+            <if test="term != null and term != ''">#{term},</if>
+            <if test="startDate != null">#{startDate},</if>
+            <if test="endDate != null">#{endDate},</if>
+            <if test="current != null and current != ''">#{current},</if>
+            <if test="weekNum != null">#{weekNum},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTeachCalendar" parameterType="TeachCalendar">
+        update ts_teach_calendar
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="schoolId != null">school_id = #{schoolId},</if>
+            <if test="year != null and year != ''">year = #{year},</if>
+            <if test="term != null and term != ''">term = #{term},</if>
+            <if test="startDate != null">start_date = #{startDate},</if>
+            <if test="endDate != null">end_date = #{endDate},</if>
+            <if test="current != null and current != ''">`current` = #{current},</if>
+            <if test="weekNum != null">week_num = #{weekNum},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTeachCalendarById" parameterType="Long">
+        update ts_teach_calendar
+        set del_flag = '2'
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteTeachCalendarByIds" parameterType="String">
+        update ts_teach_calendar set del_flag = '2' where id in
+        <foreach collection="array" item="roleId" open="(" separator="," close=")">
+            #{roleId}
+        </foreach>
+    </delete>
+
+    <select id="getByStartDate" resultType="com.ruoyi.teach.school.domain.TeachCalendar">
+        select *
+        from ts_teach_calendar
+        where school_id = #{schoolId}
+        and start_date &lt; #{startDate}
+        order by start_date desc
+    </select>
+</mapper>

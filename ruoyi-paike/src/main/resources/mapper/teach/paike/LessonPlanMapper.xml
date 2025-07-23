@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.teach.paike.mapper.LessonPlanMapper">
+
+    <resultMap type="LessonPlan" id="LessonPlanResult">
+        <result property="id" column="id"/>
+        <result property="schoolId" column="school_id"/>
+        <result property="lessonScheduleId" column="lesson_schedule_id"/>
+        <result property="grade" column="grade"/>
+        <result property="adminclass" column="adminclass"/>
+        <result property="course" column="course"/>
+        <result property="hours" column="hours"/>
+        <result property="teacher" column="teacher"/>
+    </resultMap>
+
+    <sql id="selectLessonPlanVo">
+        select t.*
+        from tpk_lesson_plan t
+    </sql>
+
+    <select id="selectLessonPlanList" parameterType="LessonPlan" resultMap="LessonPlanResult">
+        <include refid="selectLessonPlanVo"/>
+        <where>
+            <if test="schoolId != null ">and t.school_id = #{schoolId}</if>
+            <if test="lessonScheduleId != null ">and t.lesson_schedule_id = #{lessonScheduleId}</if>
+            <if test="grade != null  and grade != ''">and t.grade = #{grade}</if>
+            <if test="adminclass != null  and adminclass != ''">and t.adminclass = #{adminclass}</if>
+            <if test="course != null  and course != ''">and t.course = #{course}</if>
+            <if test="hours != null ">and t.hours = #{hours}</if>
+            <if test="teacher != null  and teacher != ''">and t.teacher = #{teacher}</if>
+        </where>
+        order by t.course
+    </select>
+
+    <select id="selectLessonPlanById" parameterType="Long" resultMap="LessonPlanResult">
+        <include refid="selectLessonPlanVo"/>
+        where t.id = #{id}
+    </select>
+
+    <select id="getCourses" resultType="String">
+        select distinct course from tpk_lesson_plan
+        where lesson_schedule_id = #{arg0}
+        <if test="arg1 != null">and grade = #{arg1}</if>
+    </select>
+
+    <insert id="insertLessonPlan" parameterType="LessonPlan" useGeneratedKeys="true" keyProperty="id">
+        insert into tpk_lesson_plan
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="schoolId != null">school_id,</if>
+            <if test="lessonScheduleId != null">lesson_schedule_id,</if>
+            <if test="grade != null and grade != ''">grade,</if>
+            <if test="adminclass != null and adminclass != ''">adminclass,</if>
+            <if test="course != null and course != ''">course,</if>
+            <if test="hours != null">hours,</if>
+            <if test="teacher != null and teacher != ''">teacher,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="schoolId != null">#{schoolId},</if>
+            <if test="lessonScheduleId != null">#{lessonScheduleId},</if>
+            <if test="grade != null and grade != ''">#{grade},</if>
+            <if test="adminclass != null and adminclass != ''">#{adminclass},</if>
+            <if test="course != null and course != ''">#{course},</if>
+            <if test="hours != null">#{hours},</if>
+            <if test="teacher != null and teacher != ''">#{teacher},</if>
+        </trim>
+    </insert>
+
+    <insert id="copy">
+        INSERT INTO tpk_lesson_plan (school_id, lesson_schedule_id, grade, adminclass, course, hours, hour, teacher,
+                                     times_pres, times)
+        select school_id,
+               #{param2},
+               grade,
+               adminclass,
+               course,
+               hours,
+               hour,
+               teacher,
+               times_pres,
+               times
+        from tpk_lesson_plan
+        where lesson_schedule_id = #{param1}
+    </insert>
+
+    <update id="updateLessonPlan" parameterType="LessonPlan">
+        update tpk_lesson_plan
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="schoolId != null">school_id = #{schoolId},</if>
+            <if test="lessonScheduleId != null">lesson_schedule_id = #{lessonScheduleId},</if>
+            <if test="grade != null and grade != ''">grade = #{grade},</if>
+            <if test="adminclass != null and adminclass != ''">adminclass = #{adminclass},</if>
+            <if test="course != null and course != ''">course = #{course},</if>
+            <if test="hours != null">hours = #{hours},</if>
+            <if test="teacher != null and teacher != ''">teacher = #{teacher},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteLessonPlanById" parameterType="Long">
+        delete
+        from tpk_lesson_plan
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteLessonPlanByIds" parameterType="String">
+        delete from tpk_lesson_plan where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteByAdminclass">
+        delete
+        from tpk_lesson_plan
+        where lesson_schedule_id = #{lessonScheduleId}
+          and adminclass = #{adminclass}
+    </delete>
+</mapper>

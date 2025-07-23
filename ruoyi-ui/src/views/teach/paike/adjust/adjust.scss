@@ -1,0 +1,54 @@
+.paike_adjust {
+  .title {line-height: 30px; font-size: 14px;}
+  .course {
+    cursor: pointer; min-height: 40px;
+    display: flex; flex-direction: column;align-items: center; justify-content: center; line-height: 20px;
+  }
+  .hovered {background-color: #eee;}
+  .swapable {background-color: #ccff99;}
+  .adjustable {background-color: #ccffff;}
+  .selected {background-color: #fff273;}
+  .temp_div {
+    min-height: 64px; padding: 5px;border: 1px solid #dfe6ec;cursor: pointer;
+    .temp_course {
+      width: 100px; margin: 5px; border: 1px solid #dfe6ec; cursor: pointer;
+      line-height: 40px; text-align: center;
+    }
+  }
+  .time_table2 {
+    .course {
+      cursor: auto; min-height: 20px;
+    }
+  }
+  .list-inline { margin-top: 10px; font-size: 12px;}
+  .list-inline > li { display: inline-block; padding-right: 10px; line-height: 12px; }
+  .sign-color {display: inline-block; border: 1px solid #ccc; font-size: 0px; height: 12px;
+    width: 23px; vertical-align: middle; margin-top: -1px;
+  }
+
+  .time_table {
+    .el-table__body tr {
+      &.selected > td {
+        background-color: #57baf5;
+        color: #fff;
+      }
+      td:first-child .cell {
+        align-items: center;
+        justify-content: center;
+        display: flex;
+      }
+    }
+    tr:hover td {
+      background-color: unset;
+    }
+    td {
+      padding: 0;
+    }
+  }
+  .time_table tbody .cell {padding: 0; min-height: 40px;}
+  .time_table2 tbody {
+    td {padding: 0}
+    .cell {min-height: 20px; line-height: 20px; min-height: 20px;}
+  }
+}
+

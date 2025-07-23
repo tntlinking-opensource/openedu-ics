@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.teach.school.mapper.LessonMapper">
+
+    <resultMap type="Lesson" id="LessonResult">
+        <result property="id" column="id"/>
+        <result property="schoolId" column="school_id"/>
+        <result property="year" column="year"/>
+        <result property="term" column="term"/>
+        <result property="grade" column="grade"/>
+        <result property="teachCalendarId" column="teach_calendar_id"/>
+        <result property="adminclass" column="adminclass"/>
+        <result property="adminclassId" column="adminclass_id"/>
+        <result property="weekday" column="weekday"/>
+        <result property="weekType" column="week_type"/>
+        <result property="timeStart" column="time_start"/>
+        <result property="timeEnd" column="time_end"/>
+        <result property="course" column="course"/>
+        <result property="courseId" column="course_id"/>
+        <result property="courseCode" column="course_code"/>
+        <result property="courseName" column="course_name"/>
+        <result property="teacherCode" column="teacher_code"/>
+        <result property="teacher" column="teacher"/>
+        <result property="teachers" column="teachers"/>
+        <result property="teacherId" column="teacher_id"/>
+        <result property="classroom" column="classroom"/>
+        <result property="times" column="times"/>
+        <result property="weekTimes" column="week_times"/>
+        <result property="timesInclude" column="times_include"/>
+        <result property="timesExclude" column="times_exclude"/>
+    </resultMap>
+
+    <sql id="selectLessonVo">
+        select *
+        from ts_lesson
+    </sql>
+
+    <select id="selectLessonList" parameterType="Lesson" resultMap="LessonResult">
+        <include refid="selectLessonVo"/>
+        <where>
+            <if test="schoolId != null ">and school_id = #{schoolId}</if>
+            <if test="year != null  and year != ''">and year = #{year}</if>
+            <if test="term != null  and term != ''">and term = #{term}</if>
+            <if test="grade != null  and grade != ''">and grade = #{grade}</if>
+            <if test="teachCalendarId != null ">and teach_calendar_id = #{teachCalendarId}</if>
+            <if test="adminclass != null  and adminclass != ''">and adminclass like concat('%', #{adminclass}, '%')</if>
+            <if test="adminclassId != null ">and adminclass_id = #{adminclassId}</if>
+            <if test="weekday != null  and weekday != ''">and weekday = #{weekday}</if>
+            <if test="weekType != null  and weekType != ''">and week_type = #{weekType}</if>
+            <if test="timeStart != null  and timeStart != ''">and time_start = #{timeStart}</if>
+            <if test="timeEnd != null  and timeEnd != ''">and time_end = #{timeEnd}</if>
+            <if test="course != null  and course != ''">and course = #{course}</if>
+            <if test="courseId != null ">and course_id = #{courseId}</if>
+            <if test="teacher != null  and teacher != ''">and teacher like concat('%', #{teacher}, '%')</if>
+            <if test="teacherId != null ">and teacher_id = #{teacherId}</if>
+            <if test="weekTimes != null ">and week_times = #{weekTimes}</if>
+            <if test="classroom != null  and classroom != ''">and classroom = #{classroom}</if>
+        </where>
+    </select>
+
+    <select id="selectLessonById" parameterType="Long" resultMap="LessonResult">
+        <include refid="selectLessonVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="checkTime" parameterType="Lesson" resultType="Long">
+        select count(*)
+        from ts_lesson t
+        where t.school_id = #{schoolId}
+        and t.year = #{year}
+        and t.term = #{term}
+        and t.adminclass_id = #{adminclassId}
+        and t.weekday = #{weekday}
+        and (t.time_start = #{timeStart} or t.time_end = #{timeStart}
+        or t.time_start = #{timeEnd} or t.time_end = #{timeEnd})
+        <if test="id != null">and t.id != #{id}</if>
+    </select>
+
+    <select id="getLessonsBySchoolId" resultMap="LessonResult">
+        select l.*,
+               a.name adminclass,
+               c.name course_name,
+               c.code course_code,
+               t.code teacher_code
+        from ts_lesson l
+                 join ts_adminclass a on a.id = l.adminclass_id
+                 join ts_course c on l.course_id = c.id
+                 left join ts_teacher t on t.id = l.teacher_id
+        where l.school_id = #{schoolId}
+          and l.year = #{year}
+    </select>
+
+    <select id="getLessonsByTerm" resultType="com.ruoyi.teach.school.domain.Lesson">
+        select l.*,
+               a.name adminclass,
+               c.name course_name,
+               c.code course_code,
+               t.code teacher_code
+        from ts_lesson l
+                 join ts_adminclass a on a.id = l.adminclass_id
+                 join ts_course c on l.course_id = c.id
+                 left join ts_teacher t on t.id = l.teacher_id
+        where l.school_id = #{schoolId}
+          and l.year = #{year}
+          and l.term = #{term}
+    </select>
+
+    <select id="getTeacherCourses" resultType="com.ruoyi.teach.school.domain.Course">
+        select distinct l.course_id id, l.course name
+        from ts_lesson l
+        where l.school_id = #{schoolId}
+          and l.teacher_id = #{id}
+        order by l.course
+    </select>
+
+    <select id="getCourses" resultType="com.ruoyi.teach.school.domain.Course">
+        select distinct l.course_id id, l.course name
+        from ts_lesson l
+        where l.teach_calendar_id = #{teachCalendarId}
+        order by l.course
+    </select>
+
+    <select id="getSubjectByTeacher" resultType="java.lang.String">
+        select distinct course
+        from ts_lesson t
+        where t.teach_calendar_id = #{calendarId}
+          and t.teacher_id = #{teacherId}
+    </select>
+
+    <select id="getAdminclassByTeacher" resultType="com.ruoyi.teach.school.domain.Adminclass">
+        select a.*
+        from ts_lesson t
+                 join ts_adminclass a on a.id = t.adminclass_id
+        where t.teach_calendar_id = #{calendarId}
+          and t.teacher_id = #{teacherId}
+    </select>
+
+    <insert id="insertLesson" parameterType="Lesson" useGeneratedKeys="true" keyProperty="id">
+        insert into ts_lesson
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="schoolId != null">school_id,</if>
+            <if test="year != null and year != ''">year,</if>
+            <if test="term != null and term != ''">term,</if>
+            <if test="grade != null and grade != ''">grade,</if>
+            <if test="teachCalendarId != null">teach_calendar_id,</if>
+            <if test="adminclass != null and adminclass != ''">adminclass,</if>
+            <if test="adminclassId != null">adminclass_id,</if>
+            <if test="weekday != null and weekday != ''">weekday,</if>
+            <if test="weekType != null and weekType != ''">week_type,</if>
+            <if test="timeStart != null and timeStart != ''">time_start,</if>
+            <if test="timeEnd != null and timeEnd != ''">time_end,</if>
+            <if test="course != null and course != ''">course,</if>
+            <if test="courseId != null">course_id,</if>
+            <if test="teacher != null and teacher != ''">teacher,</if>
+            <if test="teachers != null and teachers != ''">teachers,</if>
+            <if test="teacherId != null">teacher_id,</if>
+            <if test="classroom != null and classroom != ''">classroom,</if>
+            <if test="hour != null">hour,</if>
+            <if test="times != null and times != ''">times,</if>
+            <if test="timesInclude != null and timesInclude != ''">times_include,</if>
+            <if test="timesExclude != null and timesExclude != ''">times_exclude,</if>
+            <if test="weeks != null and weeks != ''">weeks,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="schoolId != null">#{schoolId},</if>
+            <if test="year != null and year != ''">#{year},</if>
+            <if test="term != null and term != ''">#{term},</if>
+            <if test="grade != null and grade != ''">#{grade},</if>
+            <if test="teachCalendarId != null">#{teachCalendarId},</if>
+            <if test="adminclass != null and adminclass != ''">#{adminclass},</if>
+            <if test="adminclassId != null">#{adminclassId},</if>
+            <if test="weekday != null and weekday != ''">#{weekday},</if>
+            <if test="weekType != null and weekType != ''">#{weekType},</if>
+            <if test="timeStart != null and timeStart != ''">#{timeStart},</if>
+            <if test="timeEnd != null and timeEnd != ''">#{timeEnd},</if>
+            <if test="course != null and course != ''">#{course},</if>
+            <if test="courseId != null">#{courseId},</if>
+            <if test="teacher != null and teacher != ''">#{teacher},</if>
+            <if test="teachers != null and teachers != ''">#{teachers},</if>
+            <if test="teacherId != null">#{teacherId},</if>
+            <if test="classroom != null and classroom != ''">#{classroom},</if>
+            <if test="hour != null">#{hour},</if>
+            <if test="times != null and times != ''">#{times},</if>
+            <if test="timesInclude != null and timesInclude != ''">#{timesInclude},</if>
+            <if test="timesExclude != null and timesExclude != ''">#{timesExclude},</if>
+            <if test="weeks != null and weeks != ''">#{weeks},</if>
+        </trim>
+    </insert>
+
+    <update id="updateLesson" parameterType="Lesson">
+        update ts_lesson
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="schoolId != null">school_id = #{schoolId},</if>
+            <if test="year != null and year != ''">year = #{year},</if>
+            <if test="term != null and term != ''">term = #{term},</if>
+            <if test="grade != null and grade != ''">grade = #{grade},</if>
+            <if test="teachCalendarId != null">teach_calendar_id = #{teachCalendarId},</if>
+            <if test="adminclass != null and adminclass != ''">adminclass = #{adminclass},</if>
+            <if test="adminclassId != null">adminclass_id = #{adminclassId},</if>
+            <if test="weekday != null and weekday != ''">weekday = #{weekday},</if>
+            <if test="weekType != null and weekType != ''">week_type = #{weekType},</if>
+            <if test="timeStart != null and timeStart != ''">time_start = #{timeStart},</if>
+            <if test="timeEnd != null and timeEnd != ''">time_end = #{timeEnd},</if>
+            <if test="course != null and course != ''">course = #{course},</if>
+            <if test="courseId != null">course_id = #{courseId},</if>
+            <if test="teacher != null and teacher != ''">teacher = #{teacher},</if>
+            <if test="teachers != null and teachers != ''">teachers = #{teachers},</if>
+            <if test="teacherId != null">teacher_id = #{teacherId},</if>
+            teacher2_id = #{teacher2Id},
+            <if test="classroom != null and classroom != ''">classroom = #{classroom},</if>
+            <if test="hour != null">hour = #{hour},</if>
+            <if test="times != null and times != ''">times = #{times},</if>
+            <if test="timesInclude != null">times_include = #{timesInclude},</if>
+            <if test="timesExclude != null">times_exclude = #{timesExclude},</if>
+            <if test="weeks != null">weeks = #{weeks},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteLessonById" parameterType="Long">
+        delete
+        from ts_lesson
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteLessonByIds" parameterType="String">
+        delete from ts_lesson where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

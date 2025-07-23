@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.teach.school.mapper.AdminclassMapper">
+
+    <resultMap type="com.ruoyi.teach.school.domain.Adminclass" id="AdminclassResult">
+        <result property="id" column="id"/>
+        <result property="schoolId" column="school_id"/>
+        <result property="year" column="year"/>
+        <result property="grade" column="grade"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="teacherId" column="teacher_id"/>
+        <result property="teacherName" column="teacher_name"/>
+        <result property="teacherCode" column="teacher_code"/>
+        <result property="status" column="status"/>
+        <result property="studentNum" column="student_num"/>
+    </resultMap>
+
+    <sql id="selectAdminclassVo">
+        select t.*
+        from ts_adminclass t
+    </sql>
+
+    <select id="selectAdminclassList" parameterType="Adminclass" resultMap="AdminclassResult">
+        <include refid="selectAdminclassVo"/>
+        <where>
+            <if test="schoolId != null ">and school_id = #{schoolId}</if>
+            <if test="year != null and year != ''">and year = #{year}</if>
+            <if test="grade != null and grade != ''">and grade = #{grade}</if>
+            <if test="name != null and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="teacherId != null">and teacher_id = #{teacherId}</if>
+            <if test="teacherName != null  and teacherName != ''">and teacher_name like concat('%', #{teacherName},
+                '%')
+            </if>
+            <if test="status != null ">and status = #{status}</if>
+        </where>
+        order by t.name
+    </select>
+
+    <select id="selectAdminclassById" parameterType="Long" resultMap="AdminclassResult">
+        <include refid="selectAdminclassVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="getClassBySchoolId" resultMap="AdminclassResult">
+        select t.*, te.code teacher_code
+        from ts_adminclass t
+                 left join ts_teacher te on te.id = t.teacher_id
+        where t.school_id = #{schoolId}
+          and t.year = #{year}
+    </select>
+    <select id="getStudentNum" resultMap="AdminclassResult">
+        select t.adminclass_id id, count(*) student_num
+        from ts_student t
+                 join ts_adminclass a on a.id = t.adminclass_id
+                 join ts_teach_calendar tc on tc.year = a.year and tc.current = 'Y' and tc.school_id = t.school_id
+        where t.school_id = #{schoolId}
+          and t.status = '0'
+          and t.del_flag = '0'
+        group by t.adminclass_id
+    </select>
+
+    <select id="getStudentNumByAdminclass" resultType="int">
+        select count(*)
+        from ts_student t
+        where t.adminclass_id = #{adminclassId}
+          and t.status = '0'
+          and t.del_flag = '0'
+    </select>
+
+    <select id="getByGrade" resultMap="AdminclassResult">
+        select *
+        from ts_adminclass a
+        where a.school_id = #{schoolId}
+        and a.year = #{year}
+        <if test="grade != null and grade != ''">and grade = #{grade}</if>
+    </select>
+
+    <select id="getClassTeacherRoleId" resultType="java.lang.Long">
+        SELECT role_id
+        FROM sys_role
+        WHERE role_key = 'class_teacher'
+    </select>
+
+    <insert id="insertAdminclass" parameterType="Adminclass" useGeneratedKeys="true" keyProperty="id">
+        insert into ts_adminclass
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="schoolId != null">school_id,</if>
+            <if test="year != null and year != ''">year,</if>
+            <if test="grade != null and grade != ''">grade,</if>
+            <if test="code != null and code != ''">code,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="teacherId != null">teacher_id,</if>
+            <if test="teacherName != null and teacherName != ''">teacher_name,</if>
+            <if test="status != null">status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="schoolId != null">#{schoolId},</if>
+            <if test="year != null and year != ''">#{year},</if>
+            <if test="grade != null and grade != ''">#{grade},</if>
+            <if test="code != null and code != ''">#{code},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="teacherId != null">#{teacherId},</if>
+            <if test="teacherName != null and teacherName != ''">#{teacherName},</if>
+            <if test="status != null">#{status},</if>
+        </trim>
+    </insert>
+    <update id="updateAdminclass" parameterType="Adminclass">
+        update ts_adminclass
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="schoolId != null">school_id = #{schoolId},</if>
+            <if test="year != null and year != ''">year = #{year},</if>
+            <if test="grade != null and grade != ''">grade = #{grade},</if>
+            <if test="code != null and code != ''">code = #{code},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="teacherId != null">teacher_id = #{teacherId},</if>
+            <if test="teacherName != null and teacherName != ''">teacher_name = #{teacherName},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="collegeId != null">college_id = #{collegeId},</if>
+            <if test="facultyId != null">faculty_id = #{facultyId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="updateStudentNum">
+        update ts_adminclass a ,
+            (select adminclass_id, count(id) student_num
+             from ts_student
+             where school_id = #{schoolId}
+               and status = '0'
+               and del_flag = '0'
+             group by adminclass_id) t
+        set a.student_num = t.student_num
+        where a.school_id = #{schoolId}
+          and a.year = #{year}
+          and a.id = t.adminclass_id
+    </update>
+
+    <delete id="deleteAdminclassById" parameterType="Long">
+        delete
+        from ts_adminclass
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteAdminclassByIds" parameterType="String">
+        delete from ts_adminclass where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteClassTeacher">
+        DELETE
+        FROM ts_teacher_role
+        WHERE teacher_id = #{teacherId}
+          AND school_id = #{schoolId}
+          AND role_id = #{roleId}
+    </delete>
+
+    <insert id="insertTeacherRole">
+        INSERT INTO ts_teacher_role (school_id, teacher_id, role_id)
+        VALUES (#{schoolId}, #{teacherId}, #{roleId})
+    </insert>
+</mapper>

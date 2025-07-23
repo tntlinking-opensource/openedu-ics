@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.teach.school.mapper.GradeMapper">
+
+    <resultMap type="com.ruoyi.teach.school.domain.Grade" id="GradeResult">
+        <result property="id" column="id"/>
+        <result property="schoolId" column="school_id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="teacherId" column="teacher_id"/>
+        <result property="teacher.name" column="teacher_name"/>
+        <result property="deleted" column="deleted"/>
+    </resultMap>
+
+    <sql id="selectGradeVo">
+        select t.*, te.name teacher_name
+        from ts_grade t
+        left join ts_teacher te on t.teacher_id = te.id
+    </sql>
+
+    <select id="selectGradeList" resultMap="GradeResult">
+        <include refid="selectGradeVo"/>
+        <where>
+            <if test="schoolId != null">and t.school_id = #{schoolId}</if>
+            <if test="code != null and code != ''">and t.code = #{code}</if>
+            <if test="name != null and name != ''">and t.name like concat('%', #{name}, '%')</if>
+            <if test="teacherId != null">and t.teacher_id = #{teacherId}</if>
+            and t.deleted = '0'
+        </where>
+        order by t.code
+    </select>
+
+</mapper>

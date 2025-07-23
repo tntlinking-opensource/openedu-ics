@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.teach.paike.mapper.ClassroomMapper">
+
+    <resultMap type="Classroom" id="ClassroomResult">
+        <result property="id" column="id"/>
+        <result property="schoolId" column="school_id"/>
+        <result property="lessonScheduleId" column="lesson_schedule_id"/>
+        <result property="grade" column="grade"/>
+        <result property="adminclass" column="adminclass"/>
+        <result property="building" column="building"/>
+        <result property="room" column="room"/>
+    </resultMap>
+
+    <sql id="selectClassroomVo">
+        select t.*
+        from tpk_classroom t
+    </sql>
+
+    <select id="selectClassroomList" parameterType="Classroom" resultMap="ClassroomResult">
+        <include refid="selectClassroomVo"/>
+        <where>
+            <if test="schoolId != null ">and t.school_id = #{schoolId}</if>
+            <if test="lessonScheduleId != null ">and t.lesson_schedule_id = #{lessonScheduleId}</if>
+            <if test="grade != null  and grade != ''">and t.grade = #{grade}</if>
+            <if test="adminclass != null  and adminclass != ''">and t.adminclass = #{adminclass}</if>
+            <if test="building != null  and building != ''">and t.building = #{building}</if>
+            <if test="room != null  and room != ''">and t.room = #{room}</if>
+        </where>
+        order by t.id desc
+    </select>
+
+    <select id="selectClassroomById" parameterType="Long" resultMap="ClassroomResult">
+        <include refid="selectClassroomVo"/>
+        where t.id = #{id}
+    </select>
+
+    <insert id="insertClassroom" parameterType="Classroom" useGeneratedKeys="true" keyProperty="id">
+        insert into tpk_classroom
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="schoolId != null">school_id,</if>
+            <if test="lessonScheduleId != null">lesson_schedule_id,</if>
+            <if test="grade != null and grade != ''">grade,</if>
+            <if test="adminclass != null">adminclass,</if>
+            <if test="building != null and building != ''">building,</if>
+            <if test="room != null and room != ''">room,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="schoolId != null">#{schoolId},</if>
+            <if test="lessonScheduleId != null">#{lessonScheduleId},</if>
+            <if test="grade != null and grade != ''">#{grade},</if>
+            <if test="adminclass != null">#{adminclass},</if>
+            <if test="building != null and building != ''">#{building},</if>
+            <if test="room != null and room != ''">#{room},</if>
+        </trim>
+    </insert>
+
+    <insert id="copy">
+        INSERT INTO tpk_classroom (school_id, lesson_schedule_id, grade, adminclass, building, room)
+        select school_id, #{param2}, grade, adminclass, building, room
+        from tpk_classroom
+        where lesson_schedule_id = #{param1}
+    </insert>
+
+    <update id="updateClassroom" parameterType="Classroom">
+        update tpk_classroom
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="schoolId != null">school_id = #{schoolId},</if>
+            <if test="lessonScheduleId != null">lesson_schedule_id = #{lessonScheduleId},</if>
+            <if test="grade != null and grade != ''">grade = #{grade},</if>
+            <if test="adminclass != null">adminclass = #{adminclass},</if>
+            <if test="building != null and building != ''">building = #{building},</if>
+            <if test="room != null and room != ''">room = #{room},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteClassroomById" parameterType="Long">
+        delete
+        from tpk_classroom
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteClassroomByIds" parameterType="String">
+        delete from tpk_classroom where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

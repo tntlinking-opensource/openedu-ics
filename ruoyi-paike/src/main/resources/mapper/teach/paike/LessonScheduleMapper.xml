@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.teach.paike.mapper.LessonScheduleMapper">
+
+    <resultMap type="LessonSchedule" id="LessonScheduleResult">
+        <result property="id" column="id"/>
+        <result property="schoolId" column="school_id"/>
+        <result property="teachCalenderId" column="teach_calender_id"/>
+        <result property="name" column="name"/>
+        <result property="isConflict" column="is_conflict"/>
+        <result property="isCurrent" column="is_current"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="teachCalender.year" column="year"/>
+        <result property="teachCalender.term" column="term"/>
+    </resultMap>
+
+    <sql id="selectLessonScheduleVo">
+        select t.*, tc.year, tc.term
+        from tpk_lesson_schedule t
+                 left join ts_teach_calendar tc on tc.id = t.teach_calender_id
+    </sql>
+
+    <select id="selectLessonScheduleList" parameterType="LessonSchedule" resultMap="LessonScheduleResult">
+        <include refid="selectLessonScheduleVo"/>
+        <where>
+            <if test="schoolId != null ">and t.school_id = #{schoolId}</if>
+            <if test="teachCalenderId != null ">and t.teach_calender_id = #{teachCalenderId}</if>
+            <if test="name != null  and name != ''">and t.name like concat('%', #{name}, '%')</if>
+            <if test="isConflict != null  and isConflict != ''">and t.is_conflict = #{isConflict}</if>
+            <if test="isCurrent != null  and isCurrent != ''">and t.is_current = #{isCurrent}</if>
+        </where>
+        order by t.id desc
+    </select>
+
+    <select id="selectLessonScheduleById" parameterType="Long" resultMap="LessonScheduleResult">
+        <include refid="selectLessonScheduleVo"/>
+        where t.id = #{id}
+    </select>
+
+    <select id="selectBySchoolId" parameterType="Long" resultMap="LessonScheduleResult">
+        <include refid="selectLessonScheduleVo"/>
+        where t.school_id = #{schoolId} and is_current = 'Y'
+    </select>
+
+    <insert id="insertLessonSchedule" parameterType="LessonSchedule" useGeneratedKeys="true" keyProperty="id">
+        insert into tpk_lesson_schedule
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="schoolId != null">school_id,</if>
+            <if test="teachCalenderId != null">teach_calender_id,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="isConflict != null">is_conflict,</if>
+            <if test="isCurrent != null and isCurrent != ''">is_current,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="schoolId != null">#{schoolId},</if>
+            <if test="teachCalenderId != null">#{teachCalenderId},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="isConflict != null">#{isConflict},</if>
+            <if test="isCurrent != null and isCurrent != ''">#{isCurrent},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateLessonSchedule" parameterType="LessonSchedule">
+        update tpk_lesson_schedule
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="schoolId != null">school_id = #{schoolId},</if>
+            <if test="teachCalenderId != null">teach_calender_id = #{teachCalenderId},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="isConflict != null">is_conflict = #{isConflict},</if>
+            <if test="isCurrent != null and isCurrent != ''">is_current = #{isCurrent},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="updateIsCurrent" parameterType="LessonSchedule">
+        update tpk_lesson_schedule
+        set is_current = 'N'
+        where school_id = #{schoolId}
+          and id != #{id}
+    </update>
+
+    <delete id="deleteLessonScheduleById" parameterType="Long">
+        delete
+        from tpk_lesson_schedule
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteLessonScheduleByIds" parameterType="String">
+        delete from tpk_lesson_schedule where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteLessonScheduleTime" parameterType="Long">
+        delete
+        from tpk_lesson_schedule_time
+        where lesson_schedule_id = #{id}
+    </delete>
+</mapper>
