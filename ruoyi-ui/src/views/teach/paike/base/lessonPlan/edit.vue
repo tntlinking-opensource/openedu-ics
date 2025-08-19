@@ -113,15 +113,17 @@ export default {
   },
   methods: {
     getForm() {
-      listLessonPlan(this.entity).then(res => {
-        res.data.forEach(p => {
+      let form = Object.assign({pageSize: 999}, this.entity)
+      listLessonPlan(form).then(res => {
+        let plans = res.rows
+        plans.forEach(p => {
           if (p.teacher) {
             p.teacher = p.teacher.split('+')
           } else {
             p.teacher = []
           }
         })
-        this.form.plans = res.data
+        this.form.plans = plans
       })
     },
     onGradeChange() {

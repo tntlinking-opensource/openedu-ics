@@ -109,7 +109,7 @@ export default {
     },
     exportTeachers() {
       exportTeachers(this.form).then(res => {
-        this.download(res.msg)
+        this.downloadFile(res.msg)
       })
     }
   }

@@ -167,7 +167,7 @@ export default {
         this.exportLoading = true;
         return exportLessonSchedule(queryParams);
       }).then(response => {
-        this.download(response.msg);
+        this.downloadFile(response.msg);
         this.exportLoading = false;
       }).catch(() => {
       });

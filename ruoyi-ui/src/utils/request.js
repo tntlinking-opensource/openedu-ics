@@ -7,6 +7,7 @@ import { tansParams, blobValidate } from "@/utils/ruoyi";
 import cache from '@/plugins/cache'
 import { saveAs } from 'file-saver'
 
+const baseURL = process.env.VUE_APP_BASE_API
 let downloadLoadingInstance;
 // 是否显示重新登录
 export let isRelogin = { show: false };
@@ -147,6 +148,12 @@ export function download(url, params, filename, config) {
     Message.error('下载文件出现错误，请联系管理员！')
     downloadLoadingInstance.close();
   })
+}
+
+export function downloadFile(filePath, fileName) {
+  window.location.href = baseURL + "/common/download?filePath=" + encodeURI(filePath)
+    + "&fileName=" + encodeURI(fileName || '')
+  // + "&delete=" + true;
 }
 
 export default service

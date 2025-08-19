@@ -112,7 +112,7 @@ export default {
     },
     exportAdminclasses() {
       exportAdminclasses(this.form).then(res => {
-        this.download(res.msg)
+        this.downloadFile(res.msg)
       })
     }
   }

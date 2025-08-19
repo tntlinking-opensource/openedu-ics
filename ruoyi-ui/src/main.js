@@ -12,7 +12,7 @@ import store from './store'
 import router from './router'
 import directive from './directive' // directive
 import plugins from './plugins' // plugins
-import { download } from '@/utils/request'
+import {download, downloadFile} from '@/utils/request'
 
 import './assets/icons' // icon
 import './permission' // permission control
@@ -47,6 +47,7 @@ Vue.prototype.addDateRange = addDateRange
 Vue.prototype.selectDictLabel = selectDictLabel
 Vue.prototype.selectDictLabels = selectDictLabels
 Vue.prototype.download = download
+Vue.prototype.downloadFile = downloadFile
 Vue.prototype.handleTree = handleTree
 
 // 全局组件挂载

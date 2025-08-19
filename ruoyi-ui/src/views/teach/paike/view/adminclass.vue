@@ -124,7 +124,7 @@ export default {
         showTime: this.showTime,
       }
       exportAdminclass(form).then(res => {
-        this.download(res.msg)
+        this.downloadFile(res.msg, '班级课表.xlsx')
       })
     }
   }

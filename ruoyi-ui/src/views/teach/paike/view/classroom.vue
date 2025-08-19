@@ -96,7 +96,7 @@ export default {
     },
     exportClassroom() {
       exportClassroom(this.form).then(res => {
-        this.download(res.msg)
+        this.downloadFile(res.msg)
       })
     }
   }

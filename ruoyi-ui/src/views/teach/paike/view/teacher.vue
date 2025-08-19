@@ -144,7 +144,7 @@ export default {
         showTime: this.showTime,
       }
       exportTeacher(form).then(res => {
-        this.download(res.msg)
+        this.downloadFile(res.msg)
       })
     }
   }
