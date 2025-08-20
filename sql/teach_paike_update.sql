@@ -1,3 +1,7 @@
+-- 2025-08-20
+alter table tpk_classroom_special
+    change course course varchar (255) not null comment '课程';
+
 -- 2025-08-19
 alter table tpk_lesson_schedule_record
     change json json longtext not null comment '数据';

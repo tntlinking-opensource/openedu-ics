@@ -635,14 +635,25 @@ public class LessonTableServiceImpl implements LessonTableService {
             for (int i = 0; i < data.getWeekdays(); i++) {
                 for (int j = 0; j < data.getTimeOfDay(); j++) {
                     cell = row.createCell(cellNum++);
-                    SchedulePlan plan = getSchedulePlanByClassroom(data, classroom, i, j);
-                    if (plan != null) {
-                        StringBuilder sb = new StringBuilder();
+//                    SchedulePlan plan = getSchedulePlanByClassroom(data, classroom, i, j);
+//                    if (plan != null) {
+//                        StringBuilder sb = new StringBuilder();
+//                        sb.append(plan.getAdminclassName());
+//                        sb.append("\n").append(plan.getCourseName());
+//                        sb.append("\n").append(plan.getTeacher());
+//                        cell.setCellValue(sb.toString());
+//                    }
+                    List<SchedulePlan> plans = getSchedulePlansByClassroom(data, classroom, i, j);
+                    StringBuilder sb = new StringBuilder();
+                    plans.forEach(plan -> {
+                        if (sb.length() > 0) {
+                            sb.append("\n");
+                        }
                         sb.append(plan.getAdminclassName());
                         sb.append("\n").append(plan.getCourseName());
                         sb.append("\n").append(plan.getTeacher());
-                        cell.setCellValue(sb.toString());
-                    }
+                    });
+                    cell.setCellValue(sb.toString());
                     cell.setCellStyle(cellStyle);
                 }
             }
@@ -655,6 +666,12 @@ public class LessonTableServiceImpl implements LessonTableService {
         String key = String.format("%d-%d", weekday + 1, time + 1);
         return data.getPlans().stream().filter(p -> p.getClassroom().equals(classroom)
                 && p.getPlanTimes().indexOf(key) >= 0).findAny().orElse(null);
+    }
+
+    private List<SchedulePlan> getSchedulePlansByClassroom(ScheduleData data, String classroom, int weekday, int time) {
+        String key = String.format("%d-%d", weekday + 1, time + 1);
+        return data.getPlans().stream().filter(p -> p.getClassroom().equals(classroom)
+                && p.getPlanTimes().indexOf(key) >= 0).collect(Collectors.toList());
     }
 
     @Override
