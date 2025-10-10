@@ -346,7 +346,7 @@ export default {
         this.exportLoading = true;
         return exportCourse(queryParams);
       }).then(response => {
-        this.download(response.msg);
+        this.downloadFile(response.msg);
         this.exportLoading = false;
       }).catch(() => {
       });

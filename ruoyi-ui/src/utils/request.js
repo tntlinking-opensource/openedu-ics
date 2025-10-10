@@ -151,6 +151,7 @@ export function download(url, params, filename, config) {
 }
 
 export function downloadFile(filePath, fileName) {
+  fileName = fileName || filePath.substring(filePath.lastIndexOf("_") + 1)
   window.location.href = baseURL + "/common/download?filePath=" + encodeURI(filePath)
     + "&fileName=" + encodeURI(fileName || '')
   // + "&delete=" + true;

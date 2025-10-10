@@ -28,7 +28,7 @@ const importData = {
     /** 下载模板操作 */
     importTemplate() {
       this.getService().importTemplate().then(response => {
-        this.download(response.msg)
+        this.downloadFile(response.msg)
       })
     },
     // 文件上传中处理
