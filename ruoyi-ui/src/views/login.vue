@@ -1,6 +1,9 @@
 <template>
   <div class="login">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form">
+      <div style="text-align: center; position: absolute; top: -100px; left: 0; width: 400px;">
+        <img src="../assets/images/logo2.png" height="50"/>
+      </div>
       <h3 class="title">智能排课系统</h3>
       <el-form-item prop="username">
         <el-input
@@ -53,6 +56,10 @@
           <router-link class="link-type" :to="'/register'">立即注册</router-link>
         </div>
       </el-form-item>
+      <div style="text-align: center; position: absolute; bottom: -80px; font-size: 26px; color: #fff; width: 500px; left: -50px;">
+        <a href="天天开源软件（社区版）许可协议.pdf" download="天天开源软件（社区版）许可协议.pdf" target="_blank"
+        style="white-space: nowrap;">本系统软件源代码来源于天天开源的许可</a>
+      </div>
     </el-form>
     <!--  底部  -->
     <div class="el-login-footer">
@@ -171,6 +178,7 @@ export default {
 }
 
 .login-form {
+  position: relative;
   border-radius: 6px;
   background: #ffffff;
   width: 400px;
