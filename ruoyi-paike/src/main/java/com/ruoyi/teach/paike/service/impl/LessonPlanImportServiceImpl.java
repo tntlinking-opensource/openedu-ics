@@ -34,7 +34,7 @@ public class LessonPlanImportServiceImpl implements LessonPlanImportService {
             List<String> courses = getCourses(sheet);
             for (int i = 2; i <= sheet.getLastRowNum(); i++) {
                 Row row = sheet.getRow(i);
-                if (row.getLastCellNum() < 3) {
+                if (row == null || row.getLastCellNum() < 3) {
                     continue;
                 }
                 String grade = getCellValue(row, 0);

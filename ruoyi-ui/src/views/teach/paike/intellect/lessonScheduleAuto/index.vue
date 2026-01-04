@@ -48,6 +48,7 @@ export default {
   },
   created() {
     getIndexDatas().then((res) => {
+      res.lessonSchedule.isAutoSchedule = res.lessonSchedule.isAutoSchedule || 'N'
       this.lessonSchedule = res.lessonSchedule
     })
   },
