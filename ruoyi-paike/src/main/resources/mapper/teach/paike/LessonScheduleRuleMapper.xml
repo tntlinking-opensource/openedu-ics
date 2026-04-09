@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.teach.paike.mapper.LessonScheduleRuleMapper">
+
+    <resultMap type="LessonScheduleRule" id="LessonScheduleRuleResult">
+        <result property="id" column="id"/>
+        <result property="schoolId" column="school_id"/>
+        <result property="lessonScheduleId" column="lesson_schedule_id"/>
+        <result property="name" column="name"/>
+        <result property="code" column="code"/>
+        <result property="content" column="content"/>
+        <result property="json" column="json"/>
+    </resultMap>
+
+    <sql id="selectLessonScheduleRuleVo">
+        select t.*
+        from tpk_lesson_schedule_rule t
+    </sql>
+
+    <select id="selectLessonScheduleRuleList" parameterType="LessonScheduleRule" resultMap="LessonScheduleRuleResult">
+        <include refid="selectLessonScheduleRuleVo"/>
+        <where>
+            <if test="schoolId != null ">and t.school_id = #{schoolId}</if>
+            <if test="lessonScheduleId != null ">and t.lesson_schedule_id = #{lessonScheduleId}</if>
+            <if test="name != null  and name != ''">and t.name like concat('%', #{name}, '%')</if>
+            <if test="code != null  and code != ''">and t.code = #{code}</if>
+            <if test="content != null  and content != ''">and t.content = #{content}</if>
+            <if test="json != null  and json != ''">and t.json = #{json}</if>
+        </where>
+        order by t.id desc
+    </select>
+
+    <insert id="copy">
+        INSERT INTO tpk_lesson_schedule_rule (school_id, lesson_schedule_id, name, code, content, json)
+        select school_id, #{param2}, name, code, content, json
+        from tpk_lesson_schedule_rule
+        where lesson_schedule_id = #{param1}
+    </insert>
+
+</mapper>

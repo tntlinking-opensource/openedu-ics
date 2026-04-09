@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.teach.school.mapper.CourseMapper">
+
+    <resultMap type="Course" id="CourseResult">
+        <result property="id" column="id"/>
+        <result property="schoolId" column="school_id"/>
+        <result property="sort" column="sort"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="criterion" column="criterion"/>
+        <result property="status" column="status"/>
+    </resultMap>
+
+    <sql id="selectCourseVo">
+        select id, school_id, sort, code, name, status,criterion
+        from ts_course
+    </sql>
+
+    <select id="selectCourseList" parameterType="Course" resultMap="CourseResult">
+        <include refid="selectCourseVo"/>
+        <where>
+            <if test="schoolId != null ">and school_id = #{schoolId}</if>
+            <if test="sort != null ">and sort = #{sort}</if>
+            <if test="code != null  and code != ''">and code = #{code}</if>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="status != null ">and status = #{status}</if>
+            <if test="criterion != null ">and criterion = #{criterion}</if>
+        </where>
+        order by sort
+    </select>
+
+    <select id="selectCourseById" parameterType="Long" resultMap="CourseResult">
+        <include refid="selectCourseVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertCourse" parameterType="Course" useGeneratedKeys="true" keyProperty="id">
+        insert into ts_course
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="schoolId != null">school_id,</if>
+            <if test="sort != null">sort,</if>
+            <if test="code != null and code != ''">code,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="criterion != null">criterion,</if>
+            <if test="status != null">status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="schoolId != null">#{schoolId},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="code != null and code != ''">#{code},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="criterion != null and criterion != ''">#{criterion},</if>
+            <if test="status != null">#{status},</if>
+        </trim>
+    </insert>
+
+    <update id="updateCourse" parameterType="Course">
+        update ts_course
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="schoolId != null">school_id = #{schoolId},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="code != null and code != ''">code = #{code},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="criterion != null">criterion = #{criterion},</if>
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCourseById" parameterType="Long">
+        delete
+        from ts_course
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteCourseByIds" parameterType="String">
+        delete from ts_course where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.teach.paike.mapper.ClassroomSpecialMapper">
+
+    <resultMap type="ClassroomSpecial" id="ClassroomSpecialResult">
+        <result property="id" column="id"/>
+        <result property="schoolId" column="school_id"/>
+        <result property="lessonScheduleId" column="lesson_schedule_id"/>
+        <result property="course" column="course"/>
+        <result property="building" column="building"/>
+        <result property="room" column="room"/>
+        <result property="lessonLimit" column="lesson_limit"/>
+        <result property="grade" column="grade"/>
+        <result property="adminclass" column="adminclass"/>
+    </resultMap>
+
+    <sql id="selectClassroomSpecialVo">
+        select t.*
+        from tpk_classroom_special t
+    </sql>
+
+    <select id="selectClassroomSpecialList" parameterType="ClassroomSpecial" resultMap="ClassroomSpecialResult">
+        <include refid="selectClassroomSpecialVo"/>
+        <where>
+            <if test="schoolId != null ">and t.school_id = #{schoolId}</if>
+            <if test="lessonScheduleId != null ">and t.lesson_schedule_id = #{lessonScheduleId}</if>
+            <if test="course != null  and course != ''">and t.course = #{course}</if>
+            <if test="building != null  and building != ''">and t.building = #{building}</if>
+            <if test="room != null  and room != ''">and t.room = #{room}</if>
+            <if test="lessonLimit != null ">and t.lesson_limit = #{lessonLimit}</if>
+            <if test="grade != null  and grade != ''">and t.grade = #{grade}</if>
+            <if test="adminclass != null  and adminclass != ''">and t.adminclass = #{adminclass}</if>
+        </where>
+        order by t.id desc
+    </select>
+
+    <select id="selectClassroomSpecialById" parameterType="Long" resultMap="ClassroomSpecialResult">
+        <include refid="selectClassroomSpecialVo"/>
+        where t.id = #{id}
+    </select>
+
+    <insert id="insertClassroomSpecial" parameterType="ClassroomSpecial" useGeneratedKeys="true" keyProperty="id">
+        insert into tpk_classroom_special
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="schoolId != null">school_id,</if>
+            <if test="lessonScheduleId != null">lesson_schedule_id,</if>
+            <if test="course != null and course != ''">course,</if>
+            <if test="building != null and building != ''">building,</if>
+            <if test="room != null and room != ''">room,</if>
+            <if test="lessonLimit != null">lesson_limit,</if>
+            <if test="grade != null and grade != ''">grade,</if>
+            <if test="adminclass != null">adminclass,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="schoolId != null">#{schoolId},</if>
+            <if test="lessonScheduleId != null">#{lessonScheduleId},</if>
+            <if test="course != null and course != ''">#{course},</if>
+            <if test="building != null and building != ''">#{building},</if>
+            <if test="room != null and room != ''">#{room},</if>
+            <if test="lessonLimit != null">#{lessonLimit},</if>
+            <if test="grade != null and grade != ''">#{grade},</if>
+            <if test="adminclass != null">#{adminclass},</if>
+        </trim>
+    </insert>
+
+    <insert id="copy">
+        INSERT INTO tpk_classroom_special (school_id, lesson_schedule_id, course, building, room, lesson_limit, grade,
+                                           adminclass)
+        select school_id,
+               #{param2},
+               course,
+               building,
+               room,
+               lesson_limit,
+               grade,
+               adminclass
+        from tpk_classroom_special
+        where lesson_schedule_id = #{param1}
+    </insert>
+
+    <update id="updateClassroomSpecial" parameterType="ClassroomSpecial">
+        update tpk_classroom_special
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="schoolId != null">school_id = #{schoolId},</if>
+            <if test="lessonScheduleId != null">lesson_schedule_id = #{lessonScheduleId},</if>
+            <if test="course != null and course != ''">course = #{course},</if>
+            <if test="building != null and building != ''">building = #{building},</if>
+            <if test="room != null and room != ''">room = #{room},</if>
+            <if test="lessonLimit != null">lesson_limit = #{lessonLimit},</if>
+            <if test="grade != null and grade != ''">grade = #{grade},</if>
+            <if test="adminclass != null">adminclass = #{adminclass},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteClassroomSpecialById" parameterType="Long">
+        delete
+        from tpk_classroom_special
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteClassroomSpecialByIds" parameterType="String">
+        delete from tpk_classroom_special where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
