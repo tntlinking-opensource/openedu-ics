@@ -17,4 +17,9 @@ public class LessonRow {
     private LessonCell cell5;
     private LessonCell cell6;
     private LessonCell cell7;
+    private LessonCell cell8;
+    private LessonCell cell9;
+    private LessonCell cell10;
+    private LessonCell cell11;
+    private LessonCell cell12;
 }
