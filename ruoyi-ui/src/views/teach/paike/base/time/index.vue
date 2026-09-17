@@ -60,6 +60,10 @@ export default {
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
+          if (this.form.morning + this.form.afternoon + this.form.night > 7) {
+            this.msgError("总节数不能超过7")
+            return;
+          }
           this.loading = true
           if (this.form.id != null) {
             updateTime(this.form).then(response => {
